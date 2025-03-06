@@ -32,13 +32,13 @@ def compared_version(ver1, ver2):
 class ChannelPositionalEmbedding(nn.Module):
     """
     Generates a sinusoidal channel positional encoding.
-    It creates a (c_in, m+1) matrix, flattens it to (1, c_in*(m+1)),
+    It creates a (c_in, m+1) matrix (with m fixed to 8), flattens it to (1, c_in*(m+1)),
     and repeats it n times to yield a (n, c_in*(m+1)) tensor.
     """
-    def __init__(self, c_in, m=1):
+    def __init__(self, c_in, m=8):
         super(ChannelPositionalEmbedding, self).__init__()
         self.c_in = c_in
-        self.m = int(m)
+        self.m = int(m)  # m is now fixed to 8 by default
         pe = torch.zeros(c_in, self.m + 1).float()
         pe.requires_grad = False  # fixed encoding
         position = torch.arange(0, c_in).float().unsqueeze(1)  # shape: (c_in, 1)
@@ -75,19 +75,18 @@ class PositionalEmbedding(nn.Module):
     def forward(self, x):
         return self.pe[:, :x.size(1)]
 
-
 class TokenEmbedding(nn.Module):
-    def __init__(self, c_in, d_model, m=1):
+    def __init__(self, c_in, d_model):
         """
         :param c_in: Number of input channels.
         :param d_model: Model dimension.
-        :param m: Parameter for channel positional encoding (produces m+1 values per channel).
         """
         super(TokenEmbedding, self).__init__()
         padding = 1 if compared_version(torch.__version__, '1.5.0') else 2
         self.tokenConv = nn.Conv1d(in_channels=c_in, out_channels=d_model,
                                    kernel_size=3, padding=padding, padding_mode='circular', bias=False)
-        self.m = int(m)
+        # Set m locally to 8.
+        self.m = 8  
         # Linear projection to combine token and channel encodings.
         self.concat_proj = nn.Linear(d_model + c_in * (self.m + 1), d_model)
         for module in self.modules():
@@ -105,7 +104,6 @@ class TokenEmbedding(nn.Module):
             x_emb = torch.cat([x_emb, channel_encoding], dim=-1)
             x_emb = self.concat_proj(x_emb)
         return x_emb
-
 
 class FixedEmbedding(nn.Module):
     def __init__(self, c_in, d_model):
@@ -125,7 +123,6 @@ class FixedEmbedding(nn.Module):
 
     def forward(self, x):
         return self.emb(x).detach()
-
 
 class TemporalEmbedding(nn.Module):
     def __init__(self, d_model, embed_type='fixed', freq='h'):
@@ -154,7 +151,6 @@ class TemporalEmbedding(nn.Module):
         month_x = self.month_embed(x[:, :, 0])
         return hour_x + weekday_x + day_x + month_x + minute_x
 
-
 class TimeFeatureEmbedding(nn.Module):
     def __init__(self, d_model, embed_type='timeF', freq='h'):
         super(TimeFeatureEmbedding, self).__init__()
@@ -170,15 +166,13 @@ class TimeFeatureEmbedding(nn.Module):
 ###############################################################################
 
 class DataEmbedding(nn.Module):
-    def __init__(self, c_in, d_model, m=1, embed_type='fixed', freq='h', dropout=0.1):
+    def __init__(self, c_in, d_model, embed_type='fixed', freq='h', dropout=0.1):
         """
         :param c_in: Number of input channels.
         :param d_model: Model dimension.
-        :param m: Parameter for channel positional encoding.
         """
         super(DataEmbedding, self).__init__()
-        self.m = int(m)
-        self.value_embedding = TokenEmbedding(c_in=c_in, d_model=d_model, m=self.m)
+        self.value_embedding = TokenEmbedding(c_in=c_in, d_model=d_model)
         self.position_embedding = PositionalEmbedding(d_model=d_model)
         self.temporal_embedding = TemporalEmbedding(d_model=d_model, embed_type=embed_type,
                                                     freq=freq) if embed_type != 'timeF' else TimeFeatureEmbedding(
@@ -188,21 +182,19 @@ class DataEmbedding(nn.Module):
     def forward(self, x, x_mark):
         # x: (batch, seq_len, c_in)
         batch_size, seq_len, c_in = x.shape
-        # Instantiate the channel encoder and generate the encoding.
-        channel_encoder = ChannelPositionalEmbedding(c_in, m=self.m).to(x.device)
+        # Use m=8 locally for channel positional encoding.
+        channel_encoder = ChannelPositionalEmbedding(c_in, m=8).to(x.device)
         channel_encoding = channel_encoder(seq_len)
-        # Sum the value, positional, and temporal embeddings.
+        # Sum the token, positional, and temporal embeddings.
         x = self.value_embedding(x, channel_encoding=channel_encoding) \
             + self.position_embedding(x) \
             + self.temporal_embedding(x_mark)
         return self.dropout(x)
 
-
 class DataEmbedding_wo_pos(nn.Module):
-    def __init__(self, c_in, d_model, m=1, embed_type='fixed', freq='h', dropout=0.1):
+    def __init__(self, c_in, d_model, embed_type='fixed', freq='h', dropout=0.1):
         super(DataEmbedding_wo_pos, self).__init__()
-        self.m = int(m)
-        self.value_embedding = TokenEmbedding(c_in=c_in, d_model=d_model, m=self.m)
+        self.value_embedding = TokenEmbedding(c_in=c_in, d_model=d_model)
         self.temporal_embedding = TemporalEmbedding(d_model=d_model, embed_type=embed_type,
                                                     freq=freq) if embed_type != 'timeF' else TimeFeatureEmbedding(
             d_model=d_model, embed_type=embed_type, freq=freq)
@@ -210,7 +202,7 @@ class DataEmbedding_wo_pos(nn.Module):
 
     def forward(self, x, x_mark):
         batch_size, seq_len, c_in = x.shape
-        channel_encoder = ChannelPositionalEmbedding(c_in, m=self.m).to(x.device)
+        channel_encoder = ChannelPositionalEmbedding(c_in, m=8).to(x.device)
         channel_encoding = channel_encoder(seq_len)
         x = self.value_embedding(x, channel_encoding=channel_encoding) \
             + self.temporal_embedding(x_mark)
