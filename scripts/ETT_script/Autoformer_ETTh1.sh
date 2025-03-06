@@ -1,4 +1,3 @@
-export CUDA_VISIBLE_DEVICES=1
 
 python -u run.py \
   --is_training 1 \
