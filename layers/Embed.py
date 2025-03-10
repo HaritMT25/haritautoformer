@@ -35,7 +35,7 @@ class ChannelPositionalEmbedding(nn.Module):
     It creates a (c_in, m+1) matrix (with m fixed to 8), flattens it to (1, c_in*(m+1)),
     and repeats it n times to yield a (n, c_in*(m+1)) tensor.
     """
-    def __init__(self, c_in, m=8):
+    def __init__(self, c_in, m=24):
         super(ChannelPositionalEmbedding, self).__init__()
         self.c_in = c_in
         self.m = int(m)  # m is now fixed to 8 by default
