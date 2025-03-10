@@ -86,7 +86,7 @@ class TokenEmbedding(nn.Module):
         self.tokenConv = nn.Conv1d(in_channels=c_in, out_channels=d_model,
                                    kernel_size=3, padding=padding, padding_mode='circular', bias=False)
         # Set m locally to 8.
-        self.m = 8  
+        self.m = 24  
         # Linear projection to combine token and channel encodings.
         self.concat_proj = nn.Linear(d_model + c_in * (self.m + 1), d_model)
         for module in self.modules():
