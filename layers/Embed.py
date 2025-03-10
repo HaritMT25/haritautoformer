@@ -202,7 +202,7 @@ class DataEmbedding_wo_pos(nn.Module):
 
     def forward(self, x, x_mark):
         batch_size, seq_len, c_in = x.shape
-        channel_encoder = ChannelPositionalEmbedding(c_in, m=8).to(x.device)
+        channel_encoder = ChannelPositionalEmbedding(c_in, m=24).to(x.device)
         channel_encoding = channel_encoder(seq_len)
         x = self.value_embedding(x, channel_encoding=channel_encoding) \
             + self.temporal_embedding(x_mark)
