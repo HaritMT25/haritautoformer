@@ -1,4 +1,4 @@
-import torch
+mimport torch
 import torch.nn as nn
 import math
 
@@ -183,7 +183,7 @@ class DataEmbedding(nn.Module):
         # x: (batch, seq_len, c_in)
         batch_size, seq_len, c_in = x.shape
         # Use m=8 locally for channel positional encoding.
-        channel_encoder = ChannelPositionalEmbedding(c_in, m=8).to(x.device)
+        channel_encoder = ChannelPositionalEmbedding(c_in, m=24).to(x.device)
         channel_encoding = channel_encoder(seq_len)
         # Sum the token, positional, and temporal embeddings.
         x = self.value_embedding(x, channel_encoding=channel_encoding) \
