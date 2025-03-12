@@ -205,8 +205,8 @@ class DataEmbedding_wo_pos(nn.Module):
         channel_encoder = ChannelPositionalEmbedding(c_in, m=24).to(x.device)
         channel_encoding = channel_encoder(seq_len)
 
-        print(f"Shape of x: {x.shape}")
-        print(f"Value of m: {channel_encoder.m}")
+        #print(f"Shape of x: {x.shape}")
+        #print(f"Value of m: {channel_encoder.m}")
 
         x = self.value_embedding(x, channel_encoding=channel_encoding) \
             + self.temporal_embedding(x_mark)
