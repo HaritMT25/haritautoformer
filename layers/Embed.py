@@ -1,3 +1,7 @@
+import torch
+import torch.nn as nn
+import math
+
 def compared_version(ver1, ver2):
     """
     Compare two version strings.
