@@ -13,9 +13,9 @@ python -u run.py \
   --e_layers 2 \
   --d_layers 1 \
   --factor 3 \
-  --enc_in 189 \
-  --dec_in 189 \
-  --c_out 189 \
+  --enc_in 63 \
+  --dec_in 63 \
+  --c_out 63 \
   --des 'Exp' \
   --itr 1
 
@@ -33,9 +33,9 @@ python -u run.py \
   --e_layers 2 \
   --d_layers 1 \
   --factor 3 \
-  --enc_in 189 \
-  --dec_in 189 \
-  --c_out 189 \
+  --enc_in 63 \
+  --dec_in 63 \
+  --c_out 63 \
   --des 'Exp' \
   --itr 1
 
@@ -53,9 +53,9 @@ python -u run.py \
   --e_layers 2 \
   --d_layers 1 \
   --factor 3 \
-  --enc_in 189 \
-  --dec_in 189 \
-  --c_out 189 \
+  --enc_in 63 \
+  --dec_in 63 \
+  --c_out 63 \
   --des 'Exp' \
   --itr 1
 
@@ -73,9 +73,9 @@ python -u run.py \
   --e_layers 2 \
   --d_layers 1 \
   --factor 3 \
-  --enc_in 189 \
-  --dec_in 189 \
-  --c_out 189 \
+  --enc_in 63 \
+  --dec_in 63 \
+  --c_out 63 \
   --des 'Exp' \
   --itr 1
 
@@ -93,8 +93,8 @@ python -u run.py \
   --e_layers 2 \
   --d_layers 1 \
   --factor 3 \
-  --enc_in 189 \
-  --dec_in 189 \
-  --c_out 189 \
+  --enc_in 63 \
+  --dec_in 63 \
+  --c_out 63 \
   --des 'Exp' \
   --itr 1
