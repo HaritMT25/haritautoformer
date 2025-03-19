@@ -43,7 +43,7 @@ def main():
     parser.add_argument('--dec_in', type=int, default=7, help='decoder input size')
     parser.add_argument('--c_out', type=int, default=7, help='output size')
     parser.add_argument('--d_model', type=int, default=512, help='dimension of model')
-    parser.add_argument('--n_heads', type=int, default=2, help='num of heads')
+    parser.add_argument('--n_heads', type=int, default=4, help='num of heads')
     parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')
     parser.add_argument('--d_layers', type=int, default=1, help='num of decoder layers')
     parser.add_argument('--d_ff', type=int, default=2048, help='dimension of fcn')
@@ -89,7 +89,7 @@ def main():
 
     print('Args in experiment:')
     print(args)
-    print(f'HaritMT25/haritautoformer/main/run.py: {args.n_heads}')
+    print(f'HaritMT25/haritautoformer/main/run.py number of heads: {args.n_heads}')
     Exp = Exp_Main
 
     if args.is_training:
