@@ -89,7 +89,7 @@ def main():
 
     print('Args in experiment:')
     print(args)
-
+    print(f'HaritMT25/haritautoformer/main/run.py: {args.n_heads}')
     Exp = Exp_Main
 
     if args.is_training:
